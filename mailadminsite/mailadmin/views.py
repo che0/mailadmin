@@ -25,9 +25,9 @@ def my_domains(request):
         for alias in domain.virtualaliases_set.order_by('source'):
             if not alias.source in domain_out:
                 domain_out[alias.source] = {'type': 'alias', 'destinations':[alias.destination]}
-            elif domain_out[alias.source] == 'mailbox':
-                domain_out[alias.source] = 'mailbox_alias_combo'
-            elif domain_out[alias.source] == 'alias':
+            elif domain_out[alias.source]['type'] == 'mailbox':
+                domain_out[alias.source]['type'] = 'mailbox_alias_combo'
+            elif domain_out[alias.source]['type'] == 'alias':
                 domain_out[alias.source]['destinations'].append(alias.destination)
         domain_list[domain.name] = domain_out
     
