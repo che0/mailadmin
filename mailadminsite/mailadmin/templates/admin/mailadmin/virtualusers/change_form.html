@@ -1,0 +1,29 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{{MEDIA_URL}}js/md5.js"></script>
+<script type="text/javascript"><!--
+django.jQuery(document).ready(function() {
+	django.jQuery('#hashgen_do_md5').click(function() {
+		django.jQuery('#hashgen_hash').val(hex_md5(django.jQuery('#hashgen_plaintext').val()));
+	});
+	
+	django.jQuery('#hashgen_set_to_form').click(function() {
+		django.jQuery('#id_password').val(django.jQuery('#hashgen_hash').val());
+	});
+});
+--></script>
+{% endblock %}
+
+{% block after_field_sets %}
+<div class="module">
+<h2>MD5 checksum generator</h2>
+<div class="form-row user">
+	<label for="hashgen_plaintext">Plaintext password:</label>
+	<input class="vTextField" maxlength="120" type="text" id="hashgen_plaintext" /> &rarr; <input class="vTextField" maxlength="120" type="text" id="hashgen_hash" disabled="disabled" />
+	<input type="button" value="Generate MD5" id="hashgen_do_md5" />
+	<input type="button" value="Set as password hash" id="hashgen_set_to_form" />
+</div>
+
+</div>
+{% endblock %}

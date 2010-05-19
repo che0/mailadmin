@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}My domains{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>My domains:</h1>
+  {% for domain, content in domain_list.iteritems %}
+    <h3>{{ domain }}</h3>
+    <ul>
+      {% for name, item in content.iteritems %}
+        <li>{% if item.type == 'mailbox' %}<strong>{{name}}</strong>{% else %}{{name}}{% endif %}{% if item.type == 'alias' %} &rarr;{% if item.destinations|length == 1 %} {{ item.destinations.0 }}{% else %}<ul>{% for dest in item.destinations %}<li>{{dest}}</li>{% endfor %}</ul>{% endif %}
+        {% else %}: {% if item.type == 'mailbox' %}&#x2709; mailbox{% else %}{{ item.type }}{% endif %}{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+</div>
+{% endblock %}

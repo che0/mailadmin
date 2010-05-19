@@ -1,0 +1,3 @@
+*.py[co]
+mailadminsite/settings.py
+mailadminsite/manage.py
