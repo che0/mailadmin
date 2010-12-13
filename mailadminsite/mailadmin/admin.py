@@ -25,9 +25,21 @@ class VirtualThingAdmin(admin.ModelAdmin):
             return False
         return self._has_domain_access(request, obj)
     
-    def save_mode(self, request, obj, form, change):
-        if not _has_domain_access(self, request, obj):
+    def save_model(self, request, obj, form, change):
+        if not self._has_domain_access(request, obj):
             raise PermissionDenied()
+        super(VirtualThingAdmin, self).save_model(request, obj, form, change)
+    
+    def queryset(self, request):
+        qs = super(VirtualThingAdmin, self).queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            tablename = self.model._meta.db_table
+            return qs.extra(
+                where=[tablename+'.domain_id in (select virtualdomains_id from virtual_domain_admins where user_id = %s)'],
+                params=[request.user.id]
+            )
 
 class VirtualUsersAdmin(VirtualThingAdmin):
     list_display = ('domain', '__unicode__')
