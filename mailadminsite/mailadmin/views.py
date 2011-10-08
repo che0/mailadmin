@@ -7,6 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django import forms
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.datastructures import SortedDict
 
 from mailadmin.models import VirtualDomains
 
@@ -17,10 +18,10 @@ def my_domains(request):
     else:
         my_domains = request.user.virtualdomains_set.all()
     
-    domain_list = {}
+    domain_list = SortedDict()
     for domain in my_domains.order_by('name'):
-        domain_out = {}
-        for user in domain.virtualusers_set.all():
+        domain_out = SortedDict()
+        for user in domain.virtualusers_set.order_by('user'):
             domain_out[user.user] = {'type': 'mailbox'}
         for alias in domain.virtualaliases_set.order_by('source'):
             if not alias.source in domain_out:
@@ -29,7 +30,9 @@ def my_domains(request):
                 domain_out[alias.source]['type'] = 'mailbox_alias_combo'
             elif domain_out[alias.source]['type'] == 'alias':
                 domain_out[alias.source]['destinations'].append(alias.destination)
+		domain_out[alias.source]['destinations'].sort()
         domain_list[domain.name] = domain_out
+	domain_out.keyOrder.sort()
     
     return render_to_response(u'admin/mailadmin/my_domains.html',
         {
